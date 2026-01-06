@@ -6,7 +6,7 @@ Atualmente em desenvolvimento, deployment previsto para assim que o sistema de c
 
 ## Tech Stack (atual)
 
-**Cliente:** //
+**Cliente:** React, Typescript, Axios
 
 **Servidor:** Node, Typescript, Express, Cors, node-postgres
 
@@ -29,3 +29,8 @@ Atualmente, os próximos passos do desenvolvimento são:
 
 - Base do servidor
 - Base da comunicação de servidor com banco de dados
+
+##### 06/01/2026
+
+- Início de desenvolvimento do frontend (create-react-app)
+- Base da comunicação de cliente e servidor
