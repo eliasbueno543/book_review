@@ -1,15 +1,22 @@
-import express from "express";
+import express, { urlencoded } from "express";
 import cors from "cors";
-import makeQuery from "./database.ts";
+import loginQuery from "./database.ts";
+import { parseJsonSourceFileConfigFileContent } from "typescript";
 
-const app = express();
+// iniciar backend
+var app = express();
 app.use(cors());
+app.use(express.json());
 
-const PORT = 3000;
+const PORT = 3001;
 
-app.get("/test", async (req, res) => {
-  makeQuery();
-  return res.send("yay");
+// rotas
+// login
+app.post("/attempt_login", async (req, res) => {
+  const { user_email, user_password } = req.body.data;
+  const data = await loginQuery(user_email, user_password);
+  console.log(`sv: ${data}`);
+  res.send(data);
 });
 
 app.listen(PORT, (err) => {
