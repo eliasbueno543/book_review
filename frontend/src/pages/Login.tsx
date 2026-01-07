@@ -2,20 +2,23 @@ import instance from "../cors-config";
 import { useState } from "react";
 
 function Login() {
-  const [user_email, setUserEmail] = useState("");
-  const [user_password, setUserPassword] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
-  const request_login = async () => {
+  // envia uma requisicao com os campos preenchidos para o backend autenticar
+  const requestLogin = async () => {
     try {
       await instance
         .post("attempt_login", {
           "Content-Type": "application/json",
           data: {
-            user_email,
-            user_password,
+            userEmail,
+            userPassword,
           },
         })
         .then(function (res) {
+          // apos autenticar, loga o ID referente aos dados preenchidos
+          // (temporário, apenas verificando funcionamento)
           console.log(`cl: ${res.data}`);
         });
     } catch (error) {
@@ -23,6 +26,7 @@ function Login() {
     }
   };
 
+  // valores dos campos mudam conforme o cliente os preenche
   return (
     <>
       <label>E-mail</label>
@@ -30,7 +34,7 @@ function Login() {
         type="text"
         placeholder="email"
         id="user_email"
-        value={user_email}
+        value={userEmail}
         onChange={(e) => setUserEmail(e.target.value)}
       ></input>
       <br />
@@ -40,12 +44,12 @@ function Login() {
         type="text"
         placeholder="senha"
         id="user_senha"
-        value={user_password}
+        value={userPassword}
         onChange={(e) => setUserPassword(e.target.value)}
       ></input>
       <br />
 
-      <button onClick={request_login}>Entrar</button>
+      <button onClick={requestLogin}>Entrar</button>
     </>
   );
 }
