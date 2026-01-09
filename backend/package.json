@@ -12,7 +12,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "pg": "^8.16.3",

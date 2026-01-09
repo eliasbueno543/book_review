@@ -39,3 +39,10 @@ Atualmente, os próximos passos do desenvolvimento são:
 
 - Comentários
 - Limpeza de código
+
+#### 08/01/2026
+
+- Limpeza de código
+- Remoção de módulos inutilizados
+- Base do sistema de cadastro de usuários
+- Sanitização de queries para evitar injeção maliciosa

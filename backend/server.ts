@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import loginQuery from "./database.ts";
+import { loginQuery, signinQuery } from "./database.ts";
 
 // iniciar backend
 var app = express();
@@ -12,8 +12,15 @@ const PORT = 3001;
 // rotas
 // tentar login
 app.post("/attempt_login", async (req, res) => {
-  const { user_email, user_password } = req.body.data;
-  const data = await loginQuery(user_email, user_password);
+  const { userEmail, userPassword } = req.body.data;
+  const data = await loginQuery(userEmail, userPassword);
+  res.send(data);
+});
+
+// tentar signin
+app.post("/attempt_signin", async (req, res) => {
+  const { userEmail, userPassword } = req.body.data;
+  const data = await signinQuery(userEmail, userPassword);
   res.send(data);
 });
 
