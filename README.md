@@ -46,3 +46,7 @@ Atualmente, os próximos passos do desenvolvimento são:
 - Remoção de módulos inutilizados
 - Base do sistema de cadastro de usuários
 - Sanitização de queries para evitar injeção maliciosa
+
+#### 10/01/2026
+
+- Cadastro e autenticação de senhas com hash
