@@ -8,7 +8,7 @@ Atualmente em desenvolvimento, deployment previsto para assim que o sistema de c
 
 **Cliente:** React (create-react-app), Typescript, Axios
 
-**Servidor:** Node (npm-init), Typescript, Express, Cors, node-postgres
+**Servidor:** Node (npm-init), Typescript, Express, Cors, node-postgres, bcryptjs
 
 ## Objetivos
 
