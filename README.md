@@ -50,3 +50,7 @@ Atualmente, os próximos passos do desenvolvimento são:
 #### 10/01/2026
 
 - Cadastro e autenticação de senhas com hash
+
+#### 16/01/2026
+
+- Base de criação de cookie para sessão
