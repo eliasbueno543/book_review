@@ -54,3 +54,7 @@ Atualmente, os próximos passos do desenvolvimento são:
 #### 16/01/2026
 
 - Base de criação de cookie para sessão
+
+#### 17/01/2026
+
+- Base da criação de sessão em banco de dados

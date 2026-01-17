@@ -1,9 +1,11 @@
 import instance from "../cors-config";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
+  let userId = useRef("");
+  let userAuth = useRef("");
 
   // envia uma requisicao com os campos preenchidos para o backend autenticar
   const requestLogin = async () => {
@@ -21,10 +23,21 @@ function Login() {
         .then(function (res) {
           // apos autenticar, loga o ID referente aos dados preenchidos
           // (temporário, apenas verificando funcionamento)
-          console.log(`cl: ${res.data}`);
+          userId = res.data.userIdToAuth;
+          userAuth = res.data.authToken;
         });
     } catch (error) {
       console.log(error);
+    } finally {
+      await instance.post("login_session", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          userId: userId,
+          userAuth: userAuth,
+        },
+      });
     }
   };
 

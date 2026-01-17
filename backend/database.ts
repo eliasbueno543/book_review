@@ -12,12 +12,12 @@ export async function loginQuery(userEmail: string, userPassword: string) {
   const sqlValues = [userEmail];
   const client = await pool.connect();
   const query = await client.query(sql, sqlValues);
-  var res: string | null;
+  var res: any[] | null;
   const rowcount = query.rowCount;
 
   if (rowcount === 1) {
     if (await bcrypt.compare(userPassword, query.rows[0].password)) {
-      res = query.rows[0].username;
+      res = [query.rows[0].username, query.rows[0].user_id];
     } else {
       res = null;
     }
@@ -28,6 +28,32 @@ export async function loginQuery(userEmail: string, userPassword: string) {
   client.release();
   return res;
 }
+
+// criar sessao em banco de dados
+export async function loginSession(
+  sessionUser: string,
+  authToken: string,
+  refreshToken: string,
+) {
+  try {
+    const client = await pool.connect();
+    const sqlQuery = `INSERT INTO sessions("session_user", session_auth, session_refresh) VALUES ($1, $2, $3) RETURNING *`;
+    const sqlValues = [parseInt(sessionUser), authToken, refreshToken];
+    const queryCount = await client.query(sqlQuery, sqlValues);
+    const rowcount = queryCount.rowCount;
+
+    if (rowcount !== 0) {
+      console.log("sessão criada");
+    } else {
+      console.log("algo de errado ocorreu");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// autenticar usuario logado
+export async function authSession(authToken: string, refreshToken: string) {}
 
 // tentar signin (temporario?, apenas para testar funcionalidade, eventualmente tera sanitização e resposta ao cliente)
 export async function signinQuery(userEmail: string, userPassword: string) {
