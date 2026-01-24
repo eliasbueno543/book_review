@@ -4,8 +4,8 @@ import { useRef, useState } from "react";
 function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  let userId = useRef("");
-  let userAuth = useRef("");
+  var userId = useRef("");
+  var userAuth = useRef("");
 
   // envia uma requisicao com os campos preenchidos para o backend autenticar
   const requestLogin = async () => {
@@ -28,16 +28,6 @@ function Login() {
         });
     } catch (error) {
       console.log(error);
-    } finally {
-      await instance.post("login_session", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: {
-          userId: userId,
-          userAuth: userAuth,
-        },
-      });
     }
   };
 
@@ -57,6 +47,24 @@ function Login() {
         .then(function (res) {
           // cria um novo usuario
           console.log(`cl: ${JSON.stringify(res.data)}`);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // delete
+  const logout = async () => {
+    try {
+      await instance
+        .delete("logout", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(function () {
+          userId.current = "";
+          userAuth.current = "";
         });
     } catch (error) {
       console.log(error);
@@ -92,7 +100,7 @@ function Login() {
         <button onClick={requestLogin}>Entrar</button>
       </div>
 
-      <span>//////////////////////q</span>
+      <span>//////////////////////</span>
 
       <div>
         <label>E-mail</label>
@@ -115,7 +123,13 @@ function Login() {
         ></input>
         <br />
 
-        <button onClick={requestSignin}>Entrar</button>
+        <button onClick={requestSignin}>Criar</button>
+      </div>
+
+      <span>//////////////////////</span>
+
+      <div>
+        <button onClick={logout}>logout</button>
       </div>
     </>
   );

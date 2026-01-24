@@ -1,6 +1,11 @@
 import express, { json } from "express";
 import cors from "cors";
-import { loginQuery, signinQuery, loginSession } from "./database.ts";
+import {
+  loginQuery,
+  signinQuery,
+  loginSession,
+  destroySession,
+} from "./database.ts";
 import cookieParser from "cookie-parser";
 import jsonwebtoken from "jsonwebtoken";
 const jwt = jsonwebtoken;
@@ -43,13 +48,24 @@ app.post("/attempt_login", async (req, res) => {
         },
       );
 
-      res
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: false,
-        })
-        .send({ authToken: authToken, userIdToAuth: userIdToAuth });
+      ////
+
+      try {
+        await loginSession(userIdToAuth, authToken, refreshToken);
+        console.log("sessao criada yay");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        res
+          .cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: false,
+          })
+          .send({ authToken: authToken, userIdToAuth: userIdToAuth });
+      }
+
+      ////
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +74,7 @@ app.post("/attempt_login", async (req, res) => {
   }
 });
 
-// registrar sessão após login
+/* registrar sessão após login
 app.post("/login_session", async (req, res) => {
   const { userId, userAuth } = req.body.data;
   const userRefresh = req.cookies.refreshToken;
@@ -69,12 +85,20 @@ app.post("/login_session", async (req, res) => {
     console.log(error);
   }
 });
+*/
 
 // testar login
 app.get("/check_session", async (req, res) => {
   const data = req.cookies.refreshToken;
   console.log(data);
   res.send(data);
+});
+
+// testar logout
+app.delete("/logout", async (req, res) => {
+  const userRefreshToken = req.cookies.refreshToken;
+  const data = await destroySession(userRefreshToken);
+  console.log(data);
 });
 
 // tentar signin

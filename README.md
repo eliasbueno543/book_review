@@ -58,3 +58,8 @@ Atualmente, os próximos passos do desenvolvimento são:
 #### 17/01/2026
 
 - Base da criação de sessão em banco de dados
+
+#### 24/01/2026
+
+- Limpeza de sistema de login
+- Base do sistema de logout

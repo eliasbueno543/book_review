@@ -55,6 +55,34 @@ export async function loginSession(
 // autenticar usuario logado
 export async function authSession(authToken: string, refreshToken: string) {}
 
+// destruit sessao
+export async function destroySession(
+  refreshToken: string /*,  userId: number*/,
+) {
+  var sqlQuery = `SELECT session_id FROM sessions WHERE session_refresh=$1`; // AND session_user=$1
+  var sqlValues = [refreshToken]; // userId
+  const client = await pool.connect();
+  const sessionToDelete = await client.query(sqlQuery, sqlValues);
+
+  const rowcount = sessionToDelete.rowCount;
+  var res: string;
+
+  if (rowcount !== 0) {
+    sqlQuery = `DELETE FROM sessions WHERE session_id=$1 RETURNING "session_id"`;
+    sqlValues = [sessionToDelete.rows[0].session_id];
+    const sessionDeleted = await client.query(sqlQuery, sqlValues);
+
+    if (sessionDeleted.rows[0].session_id !== null) {
+      res = "deletou " + sessionDeleted.rows[0].session_id;
+    } else {
+      res = "algo deu errado pra deletar";
+    }
+
+    client.release();
+    return res;
+  }
+}
+
 // tentar signin (temporario?, apenas para testar funcionalidade, eventualmente tera sanitização e resposta ao cliente)
 export async function signinQuery(userEmail: string, userPassword: string) {
   const sqlCount = `SELECT * FROM users WHERE email=$1`;
