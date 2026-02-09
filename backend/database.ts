@@ -47,6 +47,8 @@ export async function loginSession(
     } else {
       console.log("algo de errado ocorreu");
     }
+
+    client.release();
   } catch (error) {
     console.log(error);
   }
@@ -80,6 +82,9 @@ export async function destroySession(
 
     client.release();
     return res;
+  } else {
+    console.log("nenhuma sessão encontrada");
+    client.release();
   }
 }
 

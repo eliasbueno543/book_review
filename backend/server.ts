@@ -14,9 +14,11 @@ const jwt = jsonwebtoken;
 var app = express();
 app.use(cookieParser());
 app.use(express.json());
+
 app.use(
   cors({
     origin: "http://localhost:3000",
+    methods: ["GET", "PUT", "POST", "DELETE"],
     credentials: true,
   }),
 );
@@ -62,7 +64,12 @@ app.post("/attempt_login", async (req, res) => {
             secure: true,
             sameSite: false,
           })
-          .send({ authToken: authToken, userIdToAuth: userIdToAuth });
+          .cookie("authToken", authToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: false,
+          })
+          .end();
       }
 
       ////
@@ -87,8 +94,54 @@ app.post("/login_session", async (req, res) => {
 });
 */
 
+// autenticar
+
+const authenticateSession = async (req: any, res: any, next: any) => {
+  const authToken = req.cookies.authToken;
+  const refreshToken = req.cookies.refreshToken;
+
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_TOKEN!,
+    function (err: any, decoded: any) {
+      if (err) {
+        console.log(err.name + " " + err.expiredAt);
+        console.log("refreshToken inválido");
+
+        return res
+          .clearCookie("refreshToken")
+          .clearCookie("authToken")
+          .format({
+            json: () =>
+              res.status(403).json({
+                error: "You must login to see this",
+                location: "http://localhost:3000",
+              }),
+            html: () => res.redirect("http://localhost:3000"),
+            default: () => res.redirect("http://localhost:3000"),
+          });
+      } else {
+        jwt.verify(
+          authToken,
+          process.env.JWT_AUTH_TOKEN!,
+          function (err: any, decoded: any) {
+            if (err) {
+              console.log(err.name + " " + err.expiredAt);
+              console.log("authToken inválido");
+              return res.end("authToken inválido");
+            } else {
+              console.log("authToken válido");
+              next();
+            }
+          },
+        );
+      }
+    },
+  );
+};
+
 // testar login
-app.get("/check_session", async (req, res) => {
+app.get("/check_session", authenticateSession, async (req, res) => {
   const data = req.cookies.refreshToken;
   console.log(data);
   res.send(data);
@@ -98,7 +151,10 @@ app.get("/check_session", async (req, res) => {
 app.delete("/logout", async (req, res) => {
   const userRefreshToken = req.cookies.refreshToken;
   const data = await destroySession(userRefreshToken);
+
   console.log(data);
+
+  res.clearCookie("refreshToken").clearCookie("authToken").end();
 });
 
 // tentar signin

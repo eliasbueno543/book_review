@@ -1,31 +1,22 @@
 import instance from "../cors-config";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  var userId = useRef("");
-  var userAuth = useRef("");
 
   // envia uma requisicao com os campos preenchidos para o backend autenticar
   const requestLogin = async () => {
     try {
-      await instance
-        .post("attempt_login", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: {
-            userEmail,
-            userPassword,
-          },
-        })
-        .then(function (res) {
-          // apos autenticar, loga o ID referente aos dados preenchidos
-          // (temporário, apenas verificando funcionamento)
-          userId = res.data.userIdToAuth;
-          userAuth = res.data.authToken;
-        });
+      await instance.post("attempt_login", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          userEmail,
+          userPassword,
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -56,16 +47,11 @@ function Login() {
   // delete
   const logout = async () => {
     try {
-      await instance
-        .delete("logout", {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-        .then(function () {
-          userId.current = "";
-          userAuth.current = "";
-        });
+      await instance.delete("logout", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     } catch (error) {
       console.log(error);
     }

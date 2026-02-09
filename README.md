@@ -63,3 +63,9 @@ Atualmente, os próximos passos do desenvolvimento são:
 
 - Limpeza de sistema de login
 - Base do sistema de logout
+
+#### 09/02/2026
+
+- Base do middleware de autenticação
+- Bloqueio de requisição em caso de falha de autenticação (usando cookies, sem conexão com banco de dados)
+- Redirecionamento para página de login em caso de sessão inválida (usando cookies, sem conexão com banco de dados)
