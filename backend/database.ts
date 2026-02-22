@@ -57,6 +57,31 @@ export async function loginSession(
 // autenticar usuario logado
 export async function authSession(authToken: string, refreshToken: string) {}
 
+// atualizar auth token de sessao
+export async function authUpdate(
+  newAuthToken: string,
+  authToken: string,
+  refreshToken: string,
+) {
+  try {
+    const client = await pool.connect();
+    const sqlQuery = `UPDATE sessions SET session_auth=$1 WHERE session_auth=$2 AND session_refresh=$3 RETURNING *`;
+    const sqlValues = [newAuthToken, authToken, refreshToken];
+    const queryCount = await client.query(sqlQuery, sqlValues);
+    const rowcount = queryCount.rowCount;
+
+    if (rowcount == 1) {
+      console.log("authToken att");
+    } else {
+      console.log("algo de errado ocorreu");
+    }
+
+    client.release();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // destruit sessao
 export async function destroySession(
   refreshToken: string /*,  userId: number*/,

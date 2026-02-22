@@ -69,3 +69,8 @@ Atualmente, os próximos passos do desenvolvimento são:
 - Base do middleware de autenticação
 - Bloqueio de requisição em caso de falha de autenticação (usando cookies, sem conexão com banco de dados)
 - Redirecionamento para página de login em caso de sessão inválida (usando cookies, sem conexão com banco de dados)
+
+#### 21/02/2026
+
+- Middleware de autenticação recursivo em caso de sessão válida e token expirado
+- Páginas individuais possuem título

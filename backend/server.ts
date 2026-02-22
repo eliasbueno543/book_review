@@ -5,9 +5,10 @@ import {
   signinQuery,
   loginSession,
   destroySession,
+  authUpdate,
 } from "./database.ts";
 import cookieParser from "cookie-parser";
-import jsonwebtoken from "jsonwebtoken";
+import jsonwebtoken, { type Jwt } from "jsonwebtoken";
 const jwt = jsonwebtoken;
 
 // iniciar backend
@@ -39,7 +40,8 @@ app.post("/attempt_login", async (req, res) => {
         { usernameToAuth: usernameToAuth },
         process.env.JWT_AUTH_TOKEN!,
         {
-          expiresIn: "10m",
+          // expiresIn: "10m", // production
+          expiresIn: "1m", // testing
         },
       );
       const refreshToken = jwt.sign(
@@ -127,8 +129,39 @@ const authenticateSession = async (req: any, res: any, next: any) => {
           function (err: any, decoded: any) {
             if (err) {
               console.log(err.name + " " + err.expiredAt);
-              console.log("authToken inválido");
-              return res.end("authToken inválido");
+              console.log("authToken inválido, gerando novo código");
+
+              try {
+                const decodedAuthToken = jwt.decode(authToken, {
+                  json: true,
+                });
+
+                // console.log(decodedAuthToken!.usernameToAuth);
+                const newPayload = decodedAuthToken!.usernameToAuth;
+
+                const newAuthToken = jwt.sign(
+                  { newPayload: newPayload },
+                  process.env.JWT_AUTH_TOKEN!,
+                  {
+                    // expiresIn: "10m", // production
+                    expiresIn: "1m", // testing
+                  },
+                );
+
+                authUpdate(newAuthToken, authToken, refreshToken).then(
+                  res.cookie("authToken", newAuthToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: false,
+                  }),
+                );
+
+                var newReq = req;
+                newReq.cookies.authToken = newAuthToken;
+                return authenticateSession(newReq, res, next);
+              } catch (error) {
+                console.log(error);
+              }
             } else {
               console.log("authToken válido");
               next();
@@ -142,7 +175,7 @@ const authenticateSession = async (req: any, res: any, next: any) => {
 
 // testar login
 app.get("/check_session", authenticateSession, async (req, res) => {
-  const data = req.cookies.refreshToken;
+  const data = req.cookies.authToken;
   console.log(data);
   res.send(data);
 });

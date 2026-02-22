@@ -1,9 +1,14 @@
 import instance from "../cors-config";
-import { useState } from "react";
+import { use, useState } from "react";
+import { useEffect } from "react";
 
 function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
+
+  useEffect(() => {
+    document.title = "Login";
+  });
 
   // envia uma requisicao com os campos preenchidos para o backend autenticar
   const requestLogin = async () => {

@@ -1,8 +1,13 @@
 import instance from "../cors-config";
 import { useState } from "react";
+import { useEffect } from "react";
 
 function Logged() {
   const [session, changeSession] = useState("no");
+
+  useEffect(() => {
+    document.title = "Testar sessão";
+  });
 
   const getSession = async () => {
     try {
