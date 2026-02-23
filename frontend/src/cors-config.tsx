@@ -1,20 +1,25 @@
 import axios from "axios";
 
-// configura o Cross-Origin Resource Sharing
+// cria comunicador front-backend
 const instance = axios.create({
-  baseURL: "http://localhost:3001",
-  withCredentials: true,
+  baseURL: "http://localhost:3001", // endereço do server
+  withCredentials: true, // requests tem que ser seguras
 });
 
-// lidar com respostas falhas
+// trata respostas do backend antes de devolver pro frontend
 instance.interceptors.response.use(
+  // tudo ok
   (res) => {
     return res;
   },
+
+  // algo de errado ocorreu
   (err) => {
-    // acesso negado
+    // não existe sessão ativa
     if (err.status === 403) {
-      window.location = err.response.data.location;
+      window.location = err.response.data.location; // redireciona para página inicial
+
+      // resposta padrão, nega a request
     } else {
       return Promise.reject(err);
     }

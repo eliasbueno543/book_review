@@ -26,10 +26,94 @@ app.use(
 
 const PORT = 3001;
 
+// middleware para autenticar request
+const authenticateSession = async (req: any, res: any, next: any) => {
+  const authToken = req.cookies.authToken;
+  const refreshToken = req.cookies.refreshToken;
+
+  // verifica se refreshToken/sessão é válida
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_TOKEN!,
+    function (err: any, decoded: any) {
+      if (err) {
+        console.log(err.name + " " + err.expiredAt);
+        console.log("RefreshToken inválido.");
+
+        // limpa os cookies da request, retorna um erro
+        return res
+          .clearCookie("refreshToken")
+          .clearCookie("authToken")
+          .format({
+            json: () =>
+              res.status(403).json({
+                error:
+                  "Por favor, entre com seu usuário e senha para acessar esse conteúdo.",
+                location: "http://localhost:3000",
+              }),
+            html: () => res.redirect("http://localhost:3000"),
+            default: () => res.redirect("http://localhost:3000"),
+          });
+      } else {
+        // refreshToken, verifica se o authToken é válido
+        jwt.verify(
+          authToken,
+          process.env.JWT_AUTH_TOKEN!,
+          function (err: any, decoded: any) {
+            if (err) {
+              console.log(err.name + " " + err.expiredAt);
+              console.log("AuthToken inválido, tentando gerar um novo.");
+
+              try {
+                const decodedAuthToken = jwt.decode(authToken, {
+                  json: true,
+                });
+
+                const newPayload = decodedAuthToken!.usernameToAuth;
+
+                const newAuthToken = jwt.sign(
+                  { newPayload: newPayload },
+                  process.env.JWT_AUTH_TOKEN!,
+                  {
+                    expiresIn: "10m", // production
+                    // expiresIn: "1m", // testing
+                  },
+                );
+
+                // autentica sessão, atualiza o authToken no banco de dados, atualiza o cookie com authToken no frontend
+                authUpdate(newAuthToken, authToken, refreshToken).then(
+                  res.cookie("authToken", newAuthToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: false,
+                  }),
+                );
+
+                // tenta executar a request novamente com o novo authToken
+                var newReq = req;
+                newReq.cookies.authToken = newAuthToken;
+                return authenticateSession(newReq, res, next);
+              } catch (error) {
+                console.log(error);
+              }
+            } else {
+              // authToken válido, prossegue com a request (adicionar autenticação de sessão, copia e cola praticamente)
+              console.log("AuthToken válido.");
+              next();
+            }
+          },
+        );
+      }
+    },
+  );
+};
+
 // rotas
-// tentar login
+// login
 app.post("/attempt_login", async (req, res) => {
   const { userEmail, userPassword } = req.body.data;
+
+  // autentica usuário e senha
   const data = await loginQuery(userEmail, userPassword);
 
   if (data != null && typeof data === "object") {
@@ -40,8 +124,8 @@ app.post("/attempt_login", async (req, res) => {
         { usernameToAuth: usernameToAuth },
         process.env.JWT_AUTH_TOKEN!,
         {
-          // expiresIn: "10m", // production
-          expiresIn: "1m", // testing
+          expiresIn: "10m", // production
+          // expiresIn: "1m", // testing
         },
       );
       const refreshToken = jwt.sign(
@@ -52,8 +136,7 @@ app.post("/attempt_login", async (req, res) => {
         },
       );
 
-      ////
-
+      // cria sessão, envia JWTs
       try {
         await loginSession(userIdToAuth, authToken, refreshToken);
         console.log("sessao criada yay");
@@ -74,114 +157,24 @@ app.post("/attempt_login", async (req, res) => {
           .end();
       }
 
-      ////
+      //
     } catch (error) {
       console.log(error);
     }
   } else {
-    res.send("senha ou usuario incorreto");
+    res.send("Senha e/ou usuário incorretos.");
   }
 });
 
-/* registrar sessão após login
-app.post("/login_session", async (req, res) => {
-  const { userId, userAuth } = req.body.data;
-  const userRefresh = req.cookies.refreshToken;
-  try {
-    await loginSession(userId, userAuth, userRefresh);
-    console.log("sessao criada yay");
-  } catch (error) {
-    console.log(error);
-  }
-});
-*/
-
-// autenticar
-
-const authenticateSession = async (req: any, res: any, next: any) => {
-  const authToken = req.cookies.authToken;
-  const refreshToken = req.cookies.refreshToken;
-
-  jwt.verify(
-    refreshToken,
-    process.env.JWT_REFRESH_TOKEN!,
-    function (err: any, decoded: any) {
-      if (err) {
-        console.log(err.name + " " + err.expiredAt);
-        console.log("refreshToken inválido");
-
-        return res
-          .clearCookie("refreshToken")
-          .clearCookie("authToken")
-          .format({
-            json: () =>
-              res.status(403).json({
-                error: "You must login to see this",
-                location: "http://localhost:3000",
-              }),
-            html: () => res.redirect("http://localhost:3000"),
-            default: () => res.redirect("http://localhost:3000"),
-          });
-      } else {
-        jwt.verify(
-          authToken,
-          process.env.JWT_AUTH_TOKEN!,
-          function (err: any, decoded: any) {
-            if (err) {
-              console.log(err.name + " " + err.expiredAt);
-              console.log("authToken inválido, gerando novo código");
-
-              try {
-                const decodedAuthToken = jwt.decode(authToken, {
-                  json: true,
-                });
-
-                // console.log(decodedAuthToken!.usernameToAuth);
-                const newPayload = decodedAuthToken!.usernameToAuth;
-
-                const newAuthToken = jwt.sign(
-                  { newPayload: newPayload },
-                  process.env.JWT_AUTH_TOKEN!,
-                  {
-                    // expiresIn: "10m", // production
-                    expiresIn: "1m", // testing
-                  },
-                );
-
-                authUpdate(newAuthToken, authToken, refreshToken).then(
-                  res.cookie("authToken", newAuthToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: false,
-                  }),
-                );
-
-                var newReq = req;
-                newReq.cookies.authToken = newAuthToken;
-                return authenticateSession(newReq, res, next);
-              } catch (error) {
-                console.log(error);
-              }
-            } else {
-              console.log("authToken válido");
-              next();
-            }
-          },
-        );
-      }
-    },
-  );
-};
-
-// testar login
+// teste de login válido
 app.get("/check_session", authenticateSession, async (req, res) => {
   const data = req.cookies.authToken;
   console.log(data);
   res.send(data);
 });
 
-// testar logout
-app.delete("/logout", async (req, res) => {
+// logout
+app.delete("/logout", authenticateSession, async (req, res) => {
   const userRefreshToken = req.cookies.refreshToken;
   const data = await destroySession(userRefreshToken);
 
@@ -190,10 +183,10 @@ app.delete("/logout", async (req, res) => {
   res.clearCookie("refreshToken").clearCookie("authToken").end();
 });
 
-// tentar signin
+// cadastro/signin
 app.post("/attempt_signin", async (req, res) => {
-  const { userEmail, userPassword } = req.body.data;
-  const data = await signinQuery(userEmail, userPassword);
+  const { signinEmail, signinPassword } = req.body.data;
+  const data = await signinQuery(signinEmail, signinPassword);
   res.send(data);
 });
 

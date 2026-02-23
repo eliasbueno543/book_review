@@ -3,12 +3,15 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 function Logged() {
-  const [session, changeSession] = useState("no");
-
+  // título da página
   useEffect(() => {
     document.title = "Testar sessão";
   });
 
+  // valor a ser exibido
+  const [session, changeSession] = useState("no");
+
+  // verifica a sessão atual
   const getSession = async () => {
     try {
       await instance
@@ -19,9 +22,8 @@ function Logged() {
           },
         })
         .then(function (res) {
-          // apos autenticar, loga o ID referente aos dados preenchidos
-          // (temporário, apenas verificando funcionamento)
-          console.log(`session: ${res.data}`);
+          // apos autenticar, loga o token referente à sessão atual
+          // console.log(`session: ${res.data}`);
           changeSession(res.data);
         });
     } catch (error) {
@@ -29,7 +31,6 @@ function Logged() {
     }
   };
 
-  // valores dos campos mudam conforme o cliente os preenche
   return (
     <>
       <div>

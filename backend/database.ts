@@ -6,7 +6,7 @@ const pool = new Pool({
   connectionString: process.env.PG_URL,
 });
 
-// autenticar login (temporario, apenas para testar funcionalidade, eventualmente usara JWT)
+// autenticar login
 export async function loginQuery(userEmail: string, userPassword: string) {
   const sql = "SELECT * FROM users WHERE email=$1";
   const sqlValues = [userEmail];
@@ -29,7 +29,7 @@ export async function loginQuery(userEmail: string, userPassword: string) {
   return res;
 }
 
-// criar sessao em banco de dados
+// criar sessao em banco de dados após login
 export async function loginSession(
   sessionUser: string,
   authToken: string,
@@ -43,9 +43,9 @@ export async function loginSession(
     const rowcount = queryCount.rowCount;
 
     if (rowcount !== 0) {
-      console.log("sessão criada");
+      console.log("Sessão criada em banco de dados.");
     } else {
-      console.log("algo de errado ocorreu");
+      console.log("Algo de inesperado aconteceu ocorreu.");
     }
 
     client.release();
@@ -57,7 +57,7 @@ export async function loginSession(
 // autenticar usuario logado
 export async function authSession(authToken: string, refreshToken: string) {}
 
-// atualizar auth token de sessao
+// atualizar token de autenticação caso sessão seja válida
 export async function authUpdate(
   newAuthToken: string,
   authToken: string,
@@ -71,9 +71,9 @@ export async function authUpdate(
     const rowcount = queryCount.rowCount;
 
     if (rowcount == 1) {
-      console.log("authToken att");
+      console.log("AuthToken atualizado.");
     } else {
-      console.log("algo de errado ocorreu");
+      console.log("Algo de inesperado aconteceu ocorreu.");
     }
 
     client.release();
@@ -82,7 +82,7 @@ export async function authUpdate(
   }
 }
 
-// destruit sessao
+// destruir sessão em banco de dados em caso de logout
 export async function destroySession(
   refreshToken: string /*,  userId: number*/,
 ) {
@@ -100,20 +100,20 @@ export async function destroySession(
     const sessionDeleted = await client.query(sqlQuery, sqlValues);
 
     if (sessionDeleted.rows[0].session_id !== null) {
-      res = "deletou " + sessionDeleted.rows[0].session_id;
+      res = "Sessão  " + sessionDeleted.rows[0].session_id + "encerrada.";
     } else {
-      res = "algo deu errado pra deletar";
+      res = "Algo de inesperado aconteceu ocorreu.";
     }
 
     client.release();
     return res;
   } else {
-    console.log("nenhuma sessão encontrada");
+    console.log("Nenhuma sessão com os dados fornecidos foi encontrada.");
     client.release();
   }
 }
 
-// tentar signin (temporario?, apenas para testar funcionalidade, eventualmente tera sanitização e resposta ao cliente)
+// cadastro de novo usuário no banco de dados (eventualmente tera sanitização e resposta ao cliente)
 export async function signinQuery(userEmail: string, userPassword: string) {
   const sqlCount = `SELECT * FROM users WHERE email=$1`;
   const sqlCountValues = [userEmail];

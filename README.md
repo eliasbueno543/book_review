@@ -6,15 +6,15 @@ Atualmente em desenvolvimento, deployment previsto para assim que o sistema de c
 
 ## Tech Stack (atual)
 
-**Cliente:** React (create-react-app), Typescript, Axios
+**Cliente:** [React](https://react.dev/) ([create-react-app](https://www.npmjs.com/package/create-react-app/v/5.1.0)), [Typescript](https://www.npmjs.com/package/typescript), [Axios](https://www.npmjs.com/package/axios)
 
-**Servidor:** Node (npm-init), Typescript, Express, Cors, node-postgres, bcryptjs
+**Servidor:** [Node](https://nodejs.org/pt) (npm-init), [Typescript](https://www.npmjs.com/package/typescript), [Express.js](https://www.npmjs.com/package/express), [CORS](https://www.npmjs.com/package/cors), [node-postgres](https://www.npmjs.com/package/pg), [bcrypt.js](https://www.npmjs.com/package/bcryptjs), [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken), [cookie-parser](https://www.npmjs.com/package/cookie-parser)
 
 ## Objetivos
 
 O projeto é independente e feito principalmente para treinamento e como início de portifólio. É visado desenvolvimento progressivo, possivelmente continuado mesmo após alcançado a meta final com o intuito de refiná-lo.
 
-Atualmente, os próximos passos do desenvolvimento são:
+Atualmente, o plano de desenvolvimento envolve:
 
 - Interface de login
 - Comunicação cliente-servidor segura
@@ -74,3 +74,8 @@ Atualmente, os próximos passos do desenvolvimento são:
 
 - Middleware de autenticação recursivo em caso de sessão válida e token expirado
 - Páginas individuais possuem título
+
+#### 22/02/2026
+
+- Comentários
+- Limpeza de código
