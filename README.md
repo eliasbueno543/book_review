@@ -79,3 +79,8 @@ Atualmente, o plano de desenvolvimento envolve:
 
 - Comentários
 - Limpeza de código
+
+#### 23/02/2026
+
+- Correção de brecha de segurança em middleware de autenticação
+- Limpeza de código

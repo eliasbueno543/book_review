@@ -55,7 +55,21 @@ export async function loginSession(
 }
 
 // autenticar usuario logado
-export async function authSession(authToken: string, refreshToken: string) {}
+export async function authSession(authToken: string, refreshToken: string) {
+  const sql =
+    "SELECT * FROM sessions WHERE session_auth=$1 AND session_refresh=$2";
+  const sqlValues = [authToken, refreshToken];
+  const client = await pool.connect();
+  const query = await client.query(sql, sqlValues);
+  const rowcount = query.rowCount;
+  client.release();
+
+  if (rowcount === 1) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 // atualizar token de autenticação caso sessão seja válida
 export async function authUpdate(
@@ -100,7 +114,7 @@ export async function destroySession(
     const sessionDeleted = await client.query(sqlQuery, sqlValues);
 
     if (sessionDeleted.rows[0].session_id !== null) {
-      res = "Sessão  " + sessionDeleted.rows[0].session_id + "encerrada.";
+      res = "Sessão " + sessionDeleted.rows[0].session_id + " encerrada.";
     } else {
       res = "Algo de inesperado aconteceu ocorreu.";
     }
@@ -123,7 +137,7 @@ export async function signinQuery(userEmail: string, userPassword: string) {
 
   const rowcount = queryCount.rowCount;
   if (rowcount !== 0) {
-    res = "já existe";
+    res = "Usuário já existe.";
   } else {
     // salt pata cryptografia
     const salt = await bcrypt.genSalt(parseInt(process.env.BCRYPT_SALT!));

@@ -5,10 +5,11 @@ import {
   signinQuery,
   loginSession,
   destroySession,
+  authSession,
   authUpdate,
 } from "./database.ts";
 import cookieParser from "cookie-parser";
-import jsonwebtoken, { type Jwt } from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 const jwt = jsonwebtoken;
 
 // iniciar backend
@@ -59,7 +60,7 @@ const authenticateSession = async (req: any, res: any, next: any) => {
         jwt.verify(
           authToken,
           process.env.JWT_AUTH_TOKEN!,
-          function (err: any, decoded: any) {
+          async function (err: any, decoded: any) {
             if (err) {
               console.log(err.name + " " + err.expiredAt);
               console.log("AuthToken inválido, tentando gerar um novo.");
@@ -97,9 +98,28 @@ const authenticateSession = async (req: any, res: any, next: any) => {
                 console.log(error);
               }
             } else {
-              // authToken válido, prossegue com a request (adicionar autenticação de sessão, copia e cola praticamente)
+              // authToken válido, tenta autenticar sessão
               console.log("AuthToken válido.");
-              next();
+
+              // sessão válida
+              if ((await authSession(authToken, refreshToken)) === true) {
+                next();
+              } else {
+                // sessão inválida
+                return res
+                  .clearCookie("refreshToken")
+                  .clearCookie("authToken")
+                  .format({
+                    json: () =>
+                      res.status(403).json({
+                        error:
+                          "Por favor, entre com seu usuário e senha para acessar esse conteúdo.",
+                        location: "http://localhost:3000",
+                      }),
+                    html: () => res.redirect("http://localhost:3000"),
+                    default: () => res.redirect("http://localhost:3000"),
+                  });
+              }
             }
           },
         );
@@ -139,7 +159,6 @@ app.post("/attempt_login", async (req, res) => {
       // cria sessão, envia JWTs
       try {
         await loginSession(userIdToAuth, authToken, refreshToken);
-        console.log("sessao criada yay");
       } catch (error) {
         console.log(error);
       } finally {
