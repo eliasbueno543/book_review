@@ -1,10 +1,14 @@
-import instance from "../cors-config";
+import instance from "../frontToBackComm";
+import { checkLoggedIn } from "../frontToBackComm";
 import { useEffect, useState } from "react";
 
 function Login() {
-  // título da página
+  // on load da página
   useEffect(() => {
     document.title = "Login";
+
+    // verifica estado atual da sessão ao abrir a página
+    checkLoggedIn();
   });
 
   // campos de login
@@ -18,15 +22,17 @@ function Login() {
   // envia uma request de login com os campos preenchidos para o backend
   const requestLogin = async () => {
     try {
-      await instance.post("attempt_login", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: {
-          userEmail,
-          userPassword,
-        },
-      });
+      await instance
+        .post("attempt_login", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: {
+            userEmail,
+            userPassword,
+          },
+        })
+        .then(checkLoggedIn);
     } catch (error) {
       console.log(error);
     }
@@ -45,23 +51,14 @@ function Login() {
             signinPassword,
           },
         })
-        .then(function (res) {
+        .then(
+          //function (res) {
           // cria um novo usuario
           // console.log(`cl: ${JSON.stringify(res.data)}`);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+          //}
 
-  // delete
-  const requestLogout = async () => {
-    try {
-      await instance.delete("logout", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+          checkLoggedIn,
+        );
     } catch (error) {
       console.log(error);
     }
@@ -120,13 +117,6 @@ function Login() {
         <br />
 
         <button onClick={requestSignin}>Criar</button>
-      </div>
-
-      <span>//////////////////////</span>
-
-      {/* funcao de logout */}
-      <div>
-        <button onClick={requestLogout}>logout</button>
       </div>
     </>
   );

@@ -26,6 +26,7 @@ app.use(
 );
 
 const PORT = 3001;
+const frontendBaseUrl = "http://localhost:3000";
 
 // middleware para autenticar request
 const authenticateSession = async (req: any, res: any, next: any) => {
@@ -47,7 +48,7 @@ const authenticateSession = async (req: any, res: any, next: any) => {
           .clearCookie("authToken")
           .format({
             json: () =>
-              res.status(403).json({
+              res.status(401).json({
                 error:
                   "Por favor, entre com seu usuário e senha para acessar esse conteúdo.",
                 location: "http://localhost:3000",
@@ -111,13 +112,13 @@ const authenticateSession = async (req: any, res: any, next: any) => {
                   .clearCookie("authToken")
                   .format({
                     json: () =>
-                      res.status(403).json({
+                      res.status(401).json({
                         error:
                           "Por favor, entre com seu usuário e senha para acessar esse conteúdo.",
-                        location: "http://localhost:3000",
+                        location: "http://localhost:3000/login",
                       }),
-                    html: () => res.redirect("http://localhost:3000"),
-                    default: () => res.redirect("http://localhost:3000"),
+                    html: () => res.redirect("http://localhost:3000/login"),
+                    default: () => res.redirect("http://localhost:3000/login"),
                   });
               }
             }
@@ -129,6 +130,51 @@ const authenticateSession = async (req: any, res: any, next: any) => {
 };
 
 // rotas
+// verificar se sessão existe ao entrar na página e ao fim de chamadas
+app.post("/check_loggedin", async (req, res) => {
+  // captura tokens (caso existam) e a URL que mandou a request
+  const authToken = req.cookies.authToken;
+  const refreshToken = req.cookies.refreshToken;
+  const { clientUrl } = req.body.data;
+
+  try {
+    // se o usuário existe, se estiver na página de login, redireciona para página principal
+    if ((await authSession(authToken, refreshToken)) === true) {
+      if (clientUrl === "/login") {
+        res.format({
+          json: () =>
+            res.status(403).json({
+              error: "Usuário logado. Redirecionando.",
+              location: "http://localhost:3000/check_session",
+            }),
+          html: () => res.redirect("http://localhost:3000/check_session"),
+          default: () => res.redirect("http://localhost:3000/check_session"),
+        });
+      } else {
+        res.status(204).end();
+      }
+    } else {
+      // se o não usuário existe, redireciona para a página de login caso não esteja nela
+      if (clientUrl !== "/login") {
+        res.format({
+          json: () =>
+            res.status(401).json({
+              error:
+                "Usuário deslogado ou não identificado. Favor, entre novamente.",
+              location: "http://localhost:3000/login",
+            }),
+          html: () => res.redirect("http://localhost:3000/login"),
+          default: () => res.redirect("http://localhost:3000/login"),
+        });
+      } else {
+        res.status(204).end();
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // login
 app.post("/attempt_login", async (req, res) => {
   const { userEmail, userPassword } = req.body.data;
@@ -163,6 +209,7 @@ app.post("/attempt_login", async (req, res) => {
         console.log(error);
       } finally {
         res
+          .status(200)
           .cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: true,
@@ -199,7 +246,7 @@ app.delete("/logout", authenticateSession, async (req, res) => {
 
   console.log(data);
 
-  res.clearCookie("refreshToken").clearCookie("authToken").end();
+  res.status(204).clearCookie("refreshToken").clearCookie("authToken").end();
 });
 
 // cadastro/signin

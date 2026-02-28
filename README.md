@@ -84,3 +84,7 @@ Atualmente, o plano de desenvolvimento envolve:
 
 - Correção de brecha de segurança em middleware de autenticação
 - Limpeza de código
+
+#### 27/02/2026
+
+- Redirecionamento de páginas em caso de sessão ativa/inativa
