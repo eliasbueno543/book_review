@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import Logged from "./pages/Logged";
 
 function Router() {
   // redireciona para pagina de login ao tentar entrar na root
-  // (temporario, redirecionara apenas se nao tiver logado, implementado com JWT)
+  // (se usuário está logado, express redireciona para página principal invés disso)
   // define quais componentes renderizam em cada rota
   return (
     <>
@@ -13,6 +14,7 @@ function Router() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/check_session" element={<Logged />} />
           </Routes>
         </BrowserRouter>
       )}
