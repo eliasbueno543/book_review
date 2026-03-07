@@ -67,56 +67,60 @@ function Login() {
   // valores dos campos mudam conforme o cliente os preenche
   return (
     <>
-      {/* funcao de login */}
-      <div>
-        <label>E-mail</label>
-        <input
-          type="text"
-          placeholder="email"
-          id="user_email"
-          value={userEmail}
-          onChange={(e) => setUserEmail(e.target.value)}
-        ></input>
-        <br />
+      {/* "grid grid-rows-1 grid-cols-2 gap-4" */}
+      <div className="w-screen-md h-24 border-4 border-black"></div>
+      <div className="border-4 border-red-600">
+        {/* funcao de login */}
+        <div className="border-4 border-indigo-600">
+          <label>E-mail</label>
+          <input
+            type="text"
+            placeholder="email"
+            id="user_email"
+            value={userEmail}
+            onChange={(e) => setUserEmail(e.target.value)}
+          ></input>
+          <br />
 
-        <label>Senha</label>
-        <input
-          type="text"
-          placeholder="senha"
-          id="user_senha"
-          value={userPassword}
-          onChange={(e) => setUserPassword(e.target.value)}
-        ></input>
-        <br />
+          <label>Senha</label>
+          <input
+            type="text"
+            placeholder="senha"
+            id="user_senha"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
+          ></input>
+          <br />
 
-        <button onClick={requestLogin}>Entrar</button>
-      </div>
+          <button onClick={requestLogin}>Entrar</button>
+        </div>
 
-      <span>//////////////////////</span>
+        <></>
 
-      {/* funcao de cadastro */}
-      <div>
-        <label>E-mail</label>
-        <input
-          type="text"
-          placeholder="email"
-          id="user_email"
-          value={signinEmail}
-          onChange={(e) => setSigninEmail(e.target.value)}
-        ></input>
-        <br />
+        {/* funcao de cadastro */}
+        <div className="border-4 border-indigo-600">
+          <label>E-mail</label>
+          <input
+            type="text"
+            placeholder="email"
+            id="user_email"
+            value={signinEmail}
+            onChange={(e) => setSigninEmail(e.target.value)}
+          ></input>
+          <br />
 
-        <label>Senha</label>
-        <input
-          type="text"
-          placeholder="senha"
-          id="user_senha"
-          value={signinPassword}
-          onChange={(e) => setSigninPassword(e.target.value)}
-        ></input>
-        <br />
+          <label>Senha</label>
+          <input
+            type="text"
+            placeholder="senha"
+            id="user_senha"
+            value={signinPassword}
+            onChange={(e) => setSigninPassword(e.target.value)}
+          ></input>
+          <br />
 
-        <button onClick={requestSignin}>Criar</button>
+          <button onClick={requestSignin}>Criar</button>
+        </div>
       </div>
     </>
   );
