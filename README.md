@@ -6,7 +6,7 @@ Atualmente em desenvolvimento, deployment previsto para assim que o sistema de c
 
 ## Tech Stack (atual)
 
-**Cliente:** [React](https://react.dev/) ([create-react-app](https://www.npmjs.com/package/create-react-app/v/5.1.0)), [Typescript](https://www.npmjs.com/package/typescript), [Axios](https://www.npmjs.com/package/axios)
+**Cliente:** [VITE](https://vite.dev/), [Typescript](https://www.npmjs.com/package/typescript), [Axios](https://www.npmjs.com/package/axios), [tailwindcss](https://www.npmjs.com/package/tailwindcss)
 
 **Servidor:** [Node](https://nodejs.org/pt) (npm-init), [Typescript](https://www.npmjs.com/package/typescript), [Express.js](https://www.npmjs.com/package/express), [CORS](https://www.npmjs.com/package/cors), [node-postgres](https://www.npmjs.com/package/pg), [bcrypt.js](https://www.npmjs.com/package/bcryptjs), [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken), [cookie-parser](https://www.npmjs.com/package/cookie-parser)
 
@@ -88,3 +88,8 @@ Atualmente, o plano de desenvolvimento envolve:
 #### 27/02/2026
 
 - Redirecionamento de páginas em caso de sessão ativa/inativa
+
+#### 06/03/2026
+
+- Migração de sistema [Create React App](https://create-react-app.dev/) para [VITE](https://vite.dev/), para modernização, evitar vulnerabilidades de permitir o uso efetivo de [Tailwind CSS](https://tailwindcss.com/)
+- Implementado CSS usando Tailwind CSS
