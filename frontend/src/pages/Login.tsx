@@ -64,63 +64,59 @@ function Login() {
     }
   };
 
+  // interface de login e sigin
+  function MainScreenBox(props: { opType: string }) {
+    let opType = props.opType;
+
+    return (
+      <>
+        <div className="h-[65%] w-md p-8 border-4 border-indigo-600">
+          <label>E-mail</label>
+          <input
+            type="text"
+            placeholder={opType + " email"}
+            //id="user_email"
+            id={opType + "_email"}
+            //value={userEmail}
+            value={opType == "user" ? userEmail : signinEmail}
+            //onChange={(e) => setUserEmail(e.target.value)}
+            onChange={(e) =>
+              opType == "user"
+                ? setUserEmail(e.target.value)
+                : setSigninEmail(e.target.value)
+            }
+          ></input>
+          <br />
+
+          <label>Senha</label>
+          <input
+            type="text"
+            placeholder={opType + "senha"}
+            id={opType + "_senha"}
+            value={opType == "user" ? userPassword : signinPassword}
+            onChange={(e) =>
+              opType == "user"
+                ? setUserPassword(e.target.value)
+                : setSigninPassword(e.target.value)
+            }
+          ></input>
+          <br />
+
+          <button onClick={opType == "user" ? requestLogin : requestSignin}>
+            {opType == "user" ? "Entrar" : "Cadastrar"}
+          </button>
+        </div>
+      </>
+    );
+  }
+
   // valores dos campos mudam conforme o cliente os preenche
   return (
     <>
-      {/* "grid grid-rows-1 grid-cols-2 gap-4" */}
-      <div className="w-screen-md h-24 border-4 border-black"></div>
-      <div className="border-4 border-red-600">
+      <div className="flex w-dvw h-dvh justify-center items-center border-4 border-red-600">
         {/* funcao de login */}
-        <div className="border-4 border-indigo-600">
-          <label>E-mail</label>
-          <input
-            type="text"
-            placeholder="email"
-            id="user_email"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
-          ></input>
-          <br />
-
-          <label>Senha</label>
-          <input
-            type="text"
-            placeholder="senha"
-            id="user_senha"
-            value={userPassword}
-            onChange={(e) => setUserPassword(e.target.value)}
-          ></input>
-          <br />
-
-          <button onClick={requestLogin}>Entrar</button>
-        </div>
-
-        <></>
-
-        {/* funcao de cadastro */}
-        <div className="border-4 border-indigo-600">
-          <label>E-mail</label>
-          <input
-            type="text"
-            placeholder="email"
-            id="user_email"
-            value={signinEmail}
-            onChange={(e) => setSigninEmail(e.target.value)}
-          ></input>
-          <br />
-
-          <label>Senha</label>
-          <input
-            type="text"
-            placeholder="senha"
-            id="user_senha"
-            value={signinPassword}
-            onChange={(e) => setSigninPassword(e.target.value)}
-          ></input>
-          <br />
-
-          <button onClick={requestSignin}>Criar</button>
-        </div>
+        <MainScreenBox opType="user" />
+        <MainScreenBox opType="signin" />
       </div>
     </>
   );

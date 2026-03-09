@@ -93,3 +93,7 @@ Atualmente, o plano de desenvolvimento envolve:
 
 - Migração de sistema [Create React App](https://create-react-app.dev/) para [VITE](https://vite.dev/), para modernização, evitar vulnerabilidades de permitir o uso efetivo de [Tailwind CSS](https://tailwindcss.com/)
 - Implementado CSS usando Tailwind CSS
+
+#### 09/03/2026
+
+- Interface de login e cadastro como componente interno.
